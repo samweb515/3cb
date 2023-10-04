@@ -7,13 +7,29 @@ class Step:
         self.priority = priority
 
 
+class Card:
+    def __init__(self):
+        self.game_actions = []
+
+
+class Spell(Card):
+    def __init__(self, cost, timing):
+        super().__init__()
+        self.game_actions.append(self.cast())
+        self.cost = cost
+        self.timing = timing
+
+    def cast(self, cost, step, timing):
+        return cost is None and step.name == any(timing)
+
+
 class Permanent:
     def __init__(self):
         self.is_tapped = False
         self.summoning_sick = True
 
 
-class Creature(Permanent):
+class Creature(Permanent, Card):
     def __init__(self, power, toughness):
         super().__init__()
         self.power = power
@@ -26,19 +42,29 @@ class Player:
     def __init__(self, place_in_turn_order, deck):
         # deck is submitted cards as list of objects
         self.place_in_turn_order = place_in_turn_order
-        self.is_active_player = not place_in_turn_order
         self.hand = deck
         self.library = []
         self.battlefield = []
         self.graveyard = []
         self.exile = []
         self.triggers = []
-        print(self.place_in_turn_order, self.is_active_player)
+        self.available_game_actions = []
+        # add game actions
+        for card in self.hand:
+            self.available_game_actions.append(card.game_actions)
+        self.is_passing = False
 
     def draw_card(self):
         if self.library:
             self.hand.append(self.library[0])
             self.library.pop(0)
+
+    def game_actions(self, step, is_active):
+        print(is_active, self.place_in_turn_order, "is doing stuff at speed of: ", step.name)
+        if False:
+            pass
+        else:
+            self.is_passing = True
 
     def declare_attackers(self):
         print(self.place_in_turn_order, " is attacking stuff")
@@ -58,7 +84,6 @@ class Controller:
             Player(0, [memnite, memnite, memnite]),
             Player(1, [memnite, memnite, memnite])
         ]
-        self.active_player = self.players[0]
 
         self.steps_and_phases = [
             Step("Untap", False),
@@ -79,17 +104,15 @@ class Controller:
             self.do_step(step)
 
     def do_step(self, step):
-        for player in self.players:
-            self.stack.append(player.triggers)
         if step.name == "Untap":
-            for permanent in self.active_player.battlefield:
+            for permanent in self.players[0].battlefield:
                 permanent.is_tapped = False
         if step.name == "Draw":
-            self.active_player.draw_card()
+            self.players[0].draw_card()
         if step.name == "Declare Attackers":
-            self.active_player.declare_attackers()
+            self.players[0].declare_attackers()
         if step.name == "Declare Blockers":
-            self.players[1].declare_blockers()
+            self.players[1].declare_blockers()  # change later
         if step.name == "First Strike Damage":
             # WIP
             for creature in self.attacking_creatures:
@@ -112,6 +135,14 @@ class Controller:
                     if isinstance(permanent, Player):
                         permanent.damage_marked = 0
         if step.priority:
+            for player in self.players:
+                self.stack.append(player.triggers)
+            # begin priority
+            for player in self.players:
+                player.is_passing = False
+                while not player.is_passing:
+                    player.game_actions(step, player == self.players[0])
+
             print("priority stuffs")
 
         print("Done ", step.name)
