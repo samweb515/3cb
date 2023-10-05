@@ -38,10 +38,8 @@ class Permanent:
 
 
 class Creature(Permanent, Spell):
-    def __init__(self, cost, timing, power, toughness):
+    def __init__(self, power, toughness):
         super().__init__()
-        self.cost = cost
-        self.timing = timing
         self.power = power
         self.toughness = toughness
         self.is_blocked = False
@@ -61,7 +59,8 @@ class Player:
         self.available_game_actions = []
         # add game actions
         for card in self.hand:
-            self.available_game_actions.append(card.game_actions)
+            if any(isinstance(x, Spell) for x in card):
+                self.available_game_actions.append(x.game_actions)
         print(self.available_game_actions)
         self.is_passing = True
 
@@ -91,7 +90,7 @@ class Controller:
         self.stack = []
         self.attacking_creatures = []
 
-        memnite = Creature(None, True, 1, 1)
+        memnite = [Permanent(), Spell(None, True), Creature(1, 1)]
         self.players = [
             Player(0, [memnite]),
             Player(1, [])
