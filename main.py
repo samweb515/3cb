@@ -7,6 +7,13 @@ class Step:
         self.priority = priority
 
 
+class Game_Action:
+    def __init__(self, name, cost, timing):
+        self.name = name
+        self.cost = cost
+        self.timing = timing
+
+
 class Card:
     def __init__(self):
         self.game_actions = []
@@ -15,12 +22,13 @@ class Card:
 class Spell(Card):
     def __init__(self, cost, timing):
         super().__init__()
-        self.game_actions.append(self.cast())
+        cast = Game_Action("Cast", cost, timing)
+        self.game_actions.append(cast)
         self.cost = cost
         self.timing = timing
 
-    def cast(self, cost, step, timing):
-        return cost is None and step.name == any(timing)
+    def cast(self):
+        pass
 
 
 class Permanent:
@@ -29,9 +37,11 @@ class Permanent:
         self.summoning_sick = True
 
 
-class Creature(Permanent, Card):
-    def __init__(self, power, toughness):
+class Creature(Permanent, Spell):
+    def __init__(self, cost, timing, power, toughness):
         super().__init__()
+        self.cost = cost
+        self.timing = timing
         self.power = power
         self.toughness = toughness
         self.is_blocked = False
@@ -52,7 +62,8 @@ class Player:
         # add game actions
         for card in self.hand:
             self.available_game_actions.append(card.game_actions)
-        self.is_passing = False
+        print(self.available_game_actions)
+        self.is_passing = True
 
     def draw_card(self):
         if self.library:
@@ -60,6 +71,7 @@ class Player:
             self.library.pop(0)
 
     def game_actions(self, step, is_active):
+        # player can choose game actions and/or to pass priority
         print(is_active, self.place_in_turn_order, "is doing stuff at speed of: ", step.name)
         if False:
             pass
@@ -79,10 +91,10 @@ class Controller:
         self.stack = []
         self.attacking_creatures = []
 
-        memnite = "a good card"
+        memnite = Creature(None, True, 1, 1)
         self.players = [
-            Player(0, [memnite, memnite, memnite]),
-            Player(1, [memnite, memnite, memnite])
+            Player(0, [memnite]),
+            Player(1, [])
         ]
 
         self.steps_and_phases = [
