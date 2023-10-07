@@ -1,4 +1,5 @@
 # prepare your eyes
+import mtg_cards
 
 
 class Step:
@@ -7,7 +8,7 @@ class Step:
         self.priority = priority
 
 
-class Game_Action:
+class GameAction:
     def __init__(self, name, cost, timing):
         self.name = name
         self.cost = cost
@@ -22,7 +23,7 @@ class Card:
 class Spell(Card):
     def __init__(self, cost, timing):
         super().__init__()
-        cast = Game_Action("Cast", cost, timing)
+        cast = GameAction("Cast", cost, timing)
         self.game_actions.append(cast)
         self.cost = cost
         self.timing = timing
@@ -31,13 +32,14 @@ class Spell(Card):
         pass
 
 
-class Permanent:
+class Permanent(Card):
     def __init__(self):
+        super().__init__()
         self.is_tapped = False
         self.summoning_sick = True
 
 
-class Creature(Permanent, Spell):
+class Creature(Card):
     def __init__(self, power, toughness):
         super().__init__()
         self.power = power
@@ -59,8 +61,7 @@ class Player:
         self.available_game_actions = []
         # add game actions
         for card in self.hand:
-            if any(isinstance(x, Spell) for x in card):
-                self.available_game_actions.append(x.game_actions)
+            self.available_game_actions.append(card.game_actions)
         print(self.available_game_actions)
         self.is_passing = True
 
@@ -83,16 +84,25 @@ class Player:
     def declare_blockers(self):
         print(self.place_in_turn_order, " is blocking stuff")
 
+def Memnite_init(self, cost, timing, power, toughness):
+    Creature.__init__(self, power, toughness)
+    Spell.__init__(self, cost, timing)
 
 class Controller:
     # controls steps and game actions
     def __init__(self):
         self.stack = []
         self.attacking_creatures = []
-
-        memnite = [Permanent(), Spell(None, True), Creature(1, 1)]
+        Memnite = type('Memnite', (Creature, Permanent, Spell),
+                       {'cost': None, 'timing': True, 'power': 1, 'toughness': 1, '__init__': Memnite_init})
+        print(type(Memnite))
+        print(vars(Memnite))
+        spell = Spell(None, True)
+        print(spell.game_actions)
+        mem1 = Memnite(None, True, 1, 1)
+        print(mem1.game_actions)
         self.players = [
-            Player(0, [memnite]),
+            Player(0, [Memnite]),
             Player(1, [])
         ]
 
@@ -162,4 +172,3 @@ class Controller:
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     Controller()
-
