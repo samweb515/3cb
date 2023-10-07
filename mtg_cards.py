@@ -3,6 +3,7 @@ class GameAction:
         self.name = name
         self.cost = cost
         self.timing = timing
+        # 0 = instant speed, 1 = sorcery speed, strings for specific timing restrictions?
         self.zone = zone
 
 

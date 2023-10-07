@@ -21,7 +21,7 @@ class Player:
         self.available_game_actions = []
         # add game actions
         for card in self.hand:
-            self.available_game_actions.append(card.game_actions)
+            self.available_game_actions.append(card.game_actions[1].name)
         print(self.available_game_actions)
         self.is_passing = True
 
@@ -33,7 +33,8 @@ class Player:
     def game_actions(self, step, is_active):
         # player can choose game actions and/or to pass priority
         print(is_active, self.place_in_turn_order, "is doing stuff at speed of: ", step.name)
-        if False:
+        if self.available_game_actions:
+            self.is_passing = True
             pass
         else:
             self.is_passing = True
