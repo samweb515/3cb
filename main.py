@@ -8,46 +8,6 @@ class Step:
         self.priority = priority
 
 
-class GameAction:
-    def __init__(self, name, cost, timing):
-        self.name = name
-        self.cost = cost
-        self.timing = timing
-
-
-class Card:
-    def __init__(self):
-        self.game_actions = []
-
-
-class Spell(Card):
-    def __init__(self, cost, timing):
-        super().__init__()
-        cast = GameAction("Cast", cost, timing)
-        self.game_actions.append(cast)
-        self.cost = cost
-        self.timing = timing
-
-    def cast(self):
-        pass
-
-
-class Permanent(Card):
-    def __init__(self):
-        super().__init__()
-        self.is_tapped = False
-        self.summoning_sick = True
-
-
-class Creature(Card):
-    def __init__(self, power, toughness):
-        super().__init__()
-        self.power = power
-        self.toughness = toughness
-        self.is_blocked = False
-        self.damage_marked = 0
-
-
 class Player:
     def __init__(self, place_in_turn_order, deck):
         # deck is submitted cards as list of objects
@@ -84,25 +44,14 @@ class Player:
     def declare_blockers(self):
         print(self.place_in_turn_order, " is blocking stuff")
 
-def Memnite_init(self, cost, timing, power, toughness):
-    Creature.__init__(self, power, toughness)
-    Spell.__init__(self, cost, timing)
 
 class Controller:
     # controls steps and game actions
     def __init__(self):
         self.stack = []
         self.attacking_creatures = []
-        Memnite = type('Memnite', (Creature, Permanent, Spell),
-                       {'cost': None, 'timing': True, 'power': 1, 'toughness': 1, '__init__': Memnite_init})
-        print(type(Memnite))
-        print(vars(Memnite))
-        spell = Spell(None, True)
-        print(spell.game_actions)
-        mem1 = Memnite(None, True, 1, 1)
-        print(mem1.game_actions)
         self.players = [
-            Player(0, [Memnite]),
+            Player(0, [mtg_cards.cardlib["Memnite"]]),
             Player(1, [])
         ]
 
