@@ -1,5 +1,5 @@
 class GameAction:
-    def __init__(self, name, cost, timing, zone):
+    def __init__(self, name, cost, zone="Hand", timing=None):
         self.name = name
         self.cost = cost
         self.timing = timing
@@ -48,5 +48,5 @@ class Card:
 
 cardlib = {
     "Memnite": Card("Memnite", ["Artifact", "Creature"],
-                    [GameAction("Cast", 0, True, "Hand")]),
+                    [GameAction("Cast", 0)]),
 }
